@@ -13,6 +13,8 @@ int main(void)
 	int idx = 0;
 	pid_t child_process;
 	int status;
+	char *argv[] = {"/bin/ls", "-l", NULL};
+	int exec = 0;
 
 
 	n = 10;
@@ -53,10 +55,17 @@ int main(void)
 	
 	printf("\nparent process: %d\n child process: %d\n",getppid(),getpid());
 	child_process = fork();
+	if (child_process == -1)
+		return (-1);
+
 	if (child_process == 0)
 	{
 		printf("Child process is starting...\n");
 		sleep(3);
+		exec = execve(argv[0], argv, NULL);
+		if (exec == -1)
+			perror("Error");
+
 		printf("Child process is done\n");
 	}
 	else
@@ -64,6 +73,7 @@ int main(void)
 		printf("Waiting fo the child process to complete...\n");
 		wait(&status);
 		printf("Child process terminated with status: %d\n", status);
+		printf("Done with execve\n");
 	}
 	return (0);
 }
